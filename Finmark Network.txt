@@ -131,6 +131,14 @@ interface GigabitEthernet1/4
  ip address 192.168.4.1 255.255.255.0
  no shut
 
+! Route to Switch
+
+route inside 192.168.10.0 255.255.255.0 192.168.3.10
+route inside 192.168.20.0 255.255.255.0 192.168.3.10
+route inside 192.168.30.0 255.255.255.0 192.168.3.10
+route inside 192.168.40.0 255.255.255.0 192.168.3.10
+route inside 192.168.50.0 255.255.255.0 192.168.3.10
+
 -------
 ASA-FW2
 -------
@@ -166,6 +174,13 @@ interface GigabitEthernet1/4
  security-level 100
  ip address 192.168.4.2 255.255.255.0
  no shut
+
+! Route to Switch
+route inside 192.168.10.0 255.255.255.0 192.168.3.11
+route inside 192.168.20.0 255.255.255.0 192.168.3.11
+route inside 192.168.30.0 255.255.255.0 192.168.3.11
+route inside 192.168.40.0 255.255.255.0 192.168.3.11
+route inside 192.168.50.0 255.255.255.0 192.168.3.11
 
 -----------------------------------------------
 Configure access rules both Firewall (ASA-FW)
@@ -217,6 +232,7 @@ object network INSIDE-NET
  subnet 192.168.0.0 255.255.0.0
 nat (inside,outside) dynamic interface
 
+
 ! Save Config
 do wr
 
@@ -262,7 +278,11 @@ interface Vlan50
  ip address 192.168.50.1 255.255.255.0
 
 ! Enable routing
+int gi 0/1
+no sw
+ip address 192.168.3.10 255.255.255.0
 ip routing
+
 
 ! VTP
 int fa 0/1
@@ -285,6 +305,9 @@ sw trunk native vlan 40
 
 int fa 0/7
 sw trunk native vlan 50
+
+! Route to firewall
+ip route 0.0.0.0 0.0.0.0 192.168.3.1
 
 ! Save
 do wr mem
@@ -327,6 +350,9 @@ interface Vlan50
  ip address 192.168.50.2 255.255.255.0
 
 ! Enable routing
+int gi 0/1
+no sw
+ip address 192.168.3.11 255.255.255.0
 ip routing
 
 ! Assign VLAN
@@ -365,8 +391,12 @@ sw mo access
 sw access vlan 50
 sw trunk native vlan 50
 
+! Route to firewall
+ip route 0.0.0.0 0.0.0.0 192.168.3.1
+
+
 ! Save
-do wr mem
+do wr
 
 
 
